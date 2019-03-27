@@ -183,7 +183,7 @@ func getList(page int, bank *indexBank, province, city *index) (banks []*Bank, e
 		// b.Province = province.Name
 		// b.City = city.Name
 		// b.BankName = bank.Name
-		b.BankID = BankRemap[bank.Name]
+		b.Bank = BankRemap[bank.Name]
 		if b.BankUnionID != "" {
 			banks = append(banks, b)
 		}
@@ -223,7 +223,7 @@ func getBank() (banks []*indexBank, err error) {
 
 // Bank
 type Bank struct {
-	BankID      string `json:"bank_id,omitempty"`
+	Bank        string `json:"bank,omitempty"`
 	Name        string `json:"name,omitempty"`
 	BankUnionID string `json:"bank_union_id,omitempty"`
 	Address     string `json:"address,omitempty"`

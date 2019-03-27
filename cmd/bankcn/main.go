@@ -31,11 +31,11 @@ func main() {
 	RouteOpenAPI(mux0)
 
 	{
-		service, err := bankcn.NewbankcnService()
+		service, err := bankcn.NewBankcnService()
 		if err != nil {
 			return
 		}
-		RoutebankcnService(mux0, service)
+		RouteBankcnService(mux0, service)
 	}
 
 	mux := handlers.RecoveryHandler()(mux0)

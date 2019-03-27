@@ -5,12 +5,18 @@ import (
 )
 
 type Bank struct {
-	BankID      string `json:"bank_id,omitempty"`
-	Name        string `json:"name,omitempty"`
+	// 银行标识符
+	Bank string `json:"bank,omitempty"`
+	// 银行名字
+	Name string `json:"name,omitempty"`
+	// 银行联行号
 	BankUnionID string `json:"bank_union_id,omitempty"`
-	Address     string `json:"address,omitempty"`
-	Phone       string `json:"phone,omitempty"`
-	AreaID      string `json:"area_id,omitempty"`
+	// 联系地址
+	Address string `json:"address,omitempty"`
+	// 联系电话
+	Phone string `json:"phone,omitempty"`
+	// 所在区域代号
+	AreaID string `json:"area_id,omitempty"`
 }
 
 var Banks []*Bank
@@ -23,16 +29,16 @@ func init() {
 
 	for _, bank := range Banks {
 
-		if AreaMapBank[bank.BankID] == nil {
-			AreaMapBank[bank.BankID] = map[string][]*Bank{}
+		if AreaMapBank[bank.Bank] == nil {
+			AreaMapBank[bank.Bank] = map[string][]*Bank{}
 		}
 		areaID := bank.AreaID
 		switch len(areaID) {
 		case 4:
-			AreaMapBank[bank.BankID][areaID[:2]] = append(AreaMapBank[bank.BankID][areaID[:2]], bank)
+			AreaMapBank[bank.Bank][areaID[:2]] = append(AreaMapBank[bank.Bank][areaID[:2]], bank)
 			fallthrough
 		case 2:
-			AreaMapBank[bank.BankID][areaID] = append(AreaMapBank[bank.BankID][areaID], bank)
+			AreaMapBank[bank.Bank][areaID] = append(AreaMapBank[bank.Bank][areaID], bank)
 		}
 
 	}

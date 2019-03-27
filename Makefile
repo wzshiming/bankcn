@@ -8,6 +8,6 @@ generate:
 bindata.go:
 	cd ./hack/ && go run update.go
 	mv ./hack/banks.json ./
-	mv ./hack/icon ./icon
+	rm -r ./icon && mv ./hack/icon ./icon
 	go-bindata --pkg bankcn banks.json icon
 
