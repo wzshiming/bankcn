@@ -1,5 +1,30 @@
 package bankcn
 
+import "sort"
+
+type BankItem struct {
+	// 银行代号
+	Bank string `json:"bank"`
+	// 银行名
+	BankName string `json:"bank_name"`
+}
+
+var BankItems []*BankItem
+
+func init() {
+	bi := make([]*BankItem, 0, len(BankMap))
+	for k, v := range BankMap {
+		bi = append(bi, &BankItem{
+			Bank:     k,
+			BankName: v,
+		})
+	}
+	sort.Slice(bi, func(i, j int) bool {
+		return bi[i].Bank < bi[j].Bank
+	})
+	BankItems = bi
+}
+
 var BankMap = map[string]string{
 	"SRCB":      "深圳农村商业银行",
 	"BGB":       "广西北部湾银行",
