@@ -13,12 +13,12 @@ func NewBankcnService() (*BankcnService, error) {
 	return &BankcnService{}, nil
 }
 
-// Banks #route:"GET /banks"# 获取全部的银行
+// Banks #route:"GET /"# 获取全部的银行
 func (s *BankcnService) Banks() (banks map[string]string, err error) {
 	return bankcn.BankMap, nil
 }
 
-// Banks #route:"GET /banks/{bank}.jpg"# 获取某地区的银行图标
+// Banks #route:"GET /{bank}.jpg"# 获取某银行图标
 func (s *BankcnService) BanksJPG(bank string /* #name:"bank"# */) (file []byte /* #content:"image/jpeg"# */, err error /* #code:"404"# */) {
 	return bankcn.Asset("icon/" + bank + ".jpg")
 }
