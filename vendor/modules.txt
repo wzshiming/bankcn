@@ -1,0 +1,58 @@
+# github.com/BurntSushi/toml v0.3.1
+github.com/BurntSushi/toml
+# github.com/gorilla/handlers v1.4.0
+github.com/gorilla/handlers
+# github.com/gorilla/mux v1.7.0
+github.com/gorilla/mux
+# github.com/hashicorp/hcl v1.0.0
+github.com/hashicorp/hcl
+github.com/hashicorp/hcl/hcl/ast
+github.com/hashicorp/hcl/hcl/parser
+github.com/hashicorp/hcl/hcl/token
+github.com/hashicorp/hcl/json/parser
+github.com/hashicorp/hcl/hcl/scanner
+github.com/hashicorp/hcl/hcl/strconv
+github.com/hashicorp/hcl/json/scanner
+github.com/hashicorp/hcl/json/token
+# github.com/wzshiming/areacn v0.0.0-20190313091651-9b862b1df0cd
+github.com/wzshiming/areacn
+# github.com/wzshiming/configer v1.2.0
+github.com/wzshiming/configer
+# github.com/wzshiming/go-bindata v4.0.0+incompatible
+github.com/wzshiming/go-bindata/fs
+# github.com/wzshiming/openapi v0.0.0-20190223163253-91536a42d79f
+github.com/wzshiming/openapi/ui
+github.com/wzshiming/openapi/ui/redoc
+github.com/wzshiming/openapi/ui/swaggereditor
+github.com/wzshiming/openapi/ui/swaggerui
+github.com/wzshiming/openapi/spec
+github.com/wzshiming/openapi/util
+# github.com/wzshiming/requests v1.1.4
+github.com/wzshiming/requests
+# golang.org/x/net v0.0.0-20190327091125-710a502c58a2
+golang.org/x/net/html/charset
+golang.org/x/net/publicsuffix
+golang.org/x/net/html
+golang.org/x/net/html/atom
+# golang.org/x/text v0.3.0
+golang.org/x/text/encoding
+golang.org/x/text/transform
+golang.org/x/text/encoding/charmap
+golang.org/x/text/encoding/htmlindex
+golang.org/x/text/encoding/internal/identifier
+golang.org/x/text/encoding/internal
+golang.org/x/text/encoding/japanese
+golang.org/x/text/encoding/korean
+golang.org/x/text/encoding/simplifiedchinese
+golang.org/x/text/encoding/traditionalchinese
+golang.org/x/text/encoding/unicode
+golang.org/x/text/language
+golang.org/x/text/internal/utf8internal
+golang.org/x/text/runes
+golang.org/x/text/internal/tag
+# gopkg.in/ffmt.v1 v1.5.1
+gopkg.in/ffmt.v1
+# gopkg.in/ini.v1 v1.39.0
+gopkg.in/ini.v1
+# gopkg.in/yaml.v2 v2.2.2
+gopkg.in/yaml.v2
