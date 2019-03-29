@@ -1,6 +1,8 @@
 package bankcn
 
 import (
+	"strings"
+
 	"github.com/wzshiming/bankcn"
 )
 
@@ -24,8 +26,18 @@ func (s *BankcnService) BanksJPG(bank string /* #name:"bank"# */) (file []byte /
 }
 
 // Get #route:"GET /banks/{bank}/{area_id}"# 获取某地区的银行数据
-func (s *BankcnService) Get(bank /* #name:"bank"# */, areaID string /* #name:"area_id"# */) (banks []*bankcn.Bank, err error) {
-	return bankcn.Get(bank, areaID), nil
+func (s *BankcnService) Get(bank /* #name:"bank"# */, areaID string /* #name:"area_id"# */, filter string) (banks []*bankcn.Bank, err error) {
+	banks = bankcn.Get(bank, areaID)
+	if filter == "" {
+		return banks, nil
+	}
+	banks0 := []*bankcn.Bank{}
+	for _, bank := range banks {
+		if strings.Index(bank.Address, filter) != -1 {
+			banks0 = append(banks0, bank)
+		}
+	}
+	return banks0, nil
 }
 
 // Verify #route:"GET /bank_id/{bank_id}"# 获取银行卡号的 所属银行 以及 类型
