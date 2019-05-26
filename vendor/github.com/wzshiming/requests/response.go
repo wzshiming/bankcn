@@ -5,23 +5,27 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"mime"
 	"net/http"
 	"net/http/httputil"
+	"net/url"
 	"time"
-
-	"golang.org/x/net/html/charset"
-	"golang.org/x/text/encoding"
-	"golang.org/x/text/transform"
 )
 
 // Response is an object represents executed request and its values.
 type Response struct {
+	location    *url.URL
 	contentType string
 	request     *Request
 	rawResponse *http.Response
+	statusCode  int
+	header      http.Header
 	body        []byte
 	recvAt      time.Time
+}
+
+// Location return request url.
+func (r *Response) Location() *url.URL {
+	return r.location
 }
 
 // WriteFile is writes the response body to file.
@@ -49,18 +53,12 @@ func (r *Response) Status() string {
 
 // StatusCode returns the HTTP status code for the executed request.
 func (r *Response) StatusCode() int {
-	if r.rawResponse == nil {
-		return 200
-	}
-	return r.rawResponse.StatusCode
+	return r.statusCode
 }
 
 // Header returns the response headers
 func (r *Response) Header() http.Header {
-	if r.rawResponse == nil {
-		return nil
-	}
-	return r.rawResponse.Header
+	return r.header
 }
 
 // Cookies to access all the response cookies
@@ -117,7 +115,17 @@ func (r *Response) message(body bool) string {
 	return string(b)
 }
 
+func (r *Response) RawResponse() *http.Response {
+	return r.rawResponse
+}
+
 func (r *Response) process() (err error) {
+	if u, err := r.rawResponse.Location(); err == nil {
+		r.location = r.request.GetURL(u.String())
+	} else {
+		r.location = r.request.GetURL("")
+	}
+
 	resp := r.rawResponse
 	if resp.Body == nil {
 		return nil
@@ -126,24 +134,16 @@ func (r *Response) process() (err error) {
 		return resp.Body.Close()
 	}
 
+	r.statusCode = resp.StatusCode
+	r.header = resp.Header
 	r.contentType = resp.Header.Get(HeaderContentType)
 
-	body := tryCharset(resp.Body, r.contentType)
+	body := TryCharset(resp.Body, r.contentType)
 
 	r.body, _ = ioutil.ReadAll(body)
 	if err := resp.Body.Close(); err != nil {
 		return err
 	}
-	return nil
-}
 
-func tryCharset(r io.Reader, contentType string) io.Reader {
-	if _, params, err := mime.ParseMediaType(contentType); err == nil {
-		if cs, ok := params["charset"]; ok {
-			if e, _ := charset.Lookup(cs); e != nil && e != encoding.Nop {
-				r = transform.NewReader(r, e.NewDecoder())
-			}
-		}
-	}
-	return r
+	return nil
 }

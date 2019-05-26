@@ -1,10 +1,12 @@
 package requests
 
 import (
+	"context"
 	"crypto/tls"
 	"crypto/x509"
 	"io"
 	"log"
+	"net"
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
@@ -134,6 +136,39 @@ func (c *Client) SetTLSClientConfig(config *tls.Config) *Client {
 	return c
 }
 
+// SetDialContext sets DialContext.
+func (c *Client) SetDialContext(dial func(ctx context.Context, network, addr string) (net.Conn, error)) *Client {
+	transport, err := c.getTransport()
+	if err != nil {
+		c.printError(err)
+		return c
+	}
+	transport.DialContext = dial
+	return c
+}
+
+// SetDial sets Dial.
+func (c *Client) SetDial(dial func(network, addr string) (net.Conn, error)) *Client {
+	transport, err := c.getTransport()
+	if err != nil {
+		c.printError(err)
+		return c
+	}
+	transport.Dial = dial
+	return c
+}
+
+// SetDialTLS sets DialTLS.
+func (c *Client) SetDialTLS(dial func(network, addr string) (net.Conn, error)) *Client {
+	transport, err := c.getTransport()
+	if err != nil {
+		c.printError(err)
+		return c
+	}
+	transport.DialTLS = dial
+	return c
+}
+
 // SetKeepAlives sets the keep alives.
 func (c *Client) SetKeepAlives(enable bool) *Client {
 	transport, err := c.getTransport()
@@ -236,7 +271,7 @@ func (c *Client) SetCheckRedirect(f func(req *http.Request, via []*http.Request)
 // NoRedirect disable redirects
 func (c *Client) NoRedirect() *Client {
 	return c.SetCheckRedirect(func(req *http.Request, via []*http.Request) error {
-		return ErrNoRedirect
+		return http.ErrUseLastResponse
 	})
 }
 
@@ -264,9 +299,14 @@ func (c *Client) getTransport() (*http.Transport, error) {
 	return nil, ErrNotTransport
 }
 
+// Process executes and returns response
+func (c *Client) Process(req *http.Request) (*http.Response, error) {
+	return c.cli.Do(req)
+}
+
 // do executes and returns response
 func (c *Client) do(req *Request) (*Response, error) {
-	_, err := req.process()
+	_, err := req.RawRequest()
 	if err != nil {
 		return nil, err
 	}
@@ -278,12 +318,13 @@ func (c *Client) do(req *Request) (*Response, error) {
 			c.cache.Del(hash)
 		} else if resp, ok := c.cache.Load(hash); ok {
 			c.printCacheHit(req)
+			resp.request = req
 			return resp, nil
 		}
 	}
 	c.printRequest(req)
 	req.sendAt = time.Now()
-	resp, err := c.cli.Do(req.rawRequest)
+	resp, err := c.Process(req.rawRequest)
 	if err != nil {
 		return nil, err
 	}
@@ -298,7 +339,7 @@ func (c *Client) do(req *Request) (*Response, error) {
 	}
 	c.printResponse(response)
 	if c.cache != nil {
-		if code := response.StatusCode(); code >= 200 && code < 300 {
+		if code := response.StatusCode(); code >= 200 && code < 400 {
 			c.cache.Save(hash, response)
 		}
 	}

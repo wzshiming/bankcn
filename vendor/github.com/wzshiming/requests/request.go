@@ -367,13 +367,13 @@ func (r *Request) processURL() (*url.URL, error) {
 			return nil, err
 		}
 		q = append(q, rq)
-	} else {
+	} else if u.RawQuery != "" {
 		q = append(q, u.RawQuery)
 	}
 	return u.Parse(strings.Join(q, "?"))
 }
 
-func (r *Request) process() (*http.Request, error) {
+func (r *Request) RawRequest() (*http.Request, error) {
 	if r.rawRequest != nil {
 		return r.rawRequest, nil
 	}
@@ -390,7 +390,7 @@ func (r *Request) process() (*http.Request, error) {
 			}
 			r.AddHeaderIfNot(HeaderContentType, contentType)
 			r.body = body
-		} else { // fill form
+		} else if len(r.formParam) != 0 { // fill form
 			body, err := toForm(r.formParam)
 			if err != nil {
 				return nil, err
@@ -428,6 +428,9 @@ func (r *Request) process() (*http.Request, error) {
 }
 
 func (r *Request) messageBody() []byte {
+	if r.rawRequest.Body == nil {
+		return nil
+	}
 	body, _ := ioutil.ReadAll(r.rawRequest.Body)
 	r.rawRequest.Body.Close()
 	r.rawRequest.Body = ioutil.NopCloser(bytes.NewReader(body))
@@ -449,24 +452,24 @@ func (r *Request) MessageHead() string {
 	return r.message(false)
 }
 
-func (r *Request) messageHash() string {
-	req, err := r.Clone().process()
+// Unique returns identifies the uniqueness of the request
+func (r *Request) Unique() ([]byte, error) {
+	req, err := r.Clone().RawRequest()
 	if err != nil {
-		return err.Error()
+		return nil, err
 	}
 
 	b, err := httputil.DumpRequest(req, false)
 	if err != nil {
-		return err.Error()
+		return nil, err
 	}
 
 	b = append(b, r.messageBody()...)
-
-	return string(b)
+	return b, nil
 }
 
 func (r *Request) message(body bool) string {
-	req, err := r.Clone().process()
+	req, err := r.Clone().RawRequest()
 	if err != nil {
 		return err.Error()
 	}

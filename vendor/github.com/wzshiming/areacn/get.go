@@ -9,6 +9,7 @@ import (
 type Area struct {
 	AreaID string `json:"area_id"`
 	Name   string `json:"name"`
+	Level  int    `json:"level"`
 }
 
 type AreaLink struct {
@@ -27,6 +28,14 @@ func search(areas []*AreaLink, areaID string) int {
 func init() {
 	data := MustAsset("pcctv.json")
 	json.Unmarshal(data, &Areas)
+	setLevel(Areas, 1)
+}
+
+func setLevel(areas []*AreaLink, level int) {
+	for _, area := range areas {
+		area.Level = level
+		setLevel(area.Children, level+1)
+	}
 }
 
 func lookup(areas []*AreaLink, areaID string) []*AreaLink {
