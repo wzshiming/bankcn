@@ -52,3 +52,8 @@ func Get(bankID string, areaID string) []*Bank {
 	}
 	return b[areaID]
 }
+
+// GetName 根据bank 获取中文名
+func GetName(bank string) string {
+	return BankMap[bank]
+}
